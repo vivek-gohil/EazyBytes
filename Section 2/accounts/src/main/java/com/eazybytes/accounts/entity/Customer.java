@@ -19,7 +19,7 @@ import lombok.ToString;
 @NoArgsConstructor
 //JPA
 @Entity
-public class Customer {
+public class Customer extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -32,5 +32,5 @@ public class Customer {
 
     @Column(name="mobile_number")
     private String mobileNumber;
-    
+
 }
