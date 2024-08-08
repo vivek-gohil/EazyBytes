@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: "configserver"
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          search-locations:
+          #- "classpath:/config"
+          - "file:///D://Learnings//Spring_Boot_Microservices'//Udemy//EazyBytes//Section 6"
+server:
+  port: 8071
