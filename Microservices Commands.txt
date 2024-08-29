@@ -1,0 +1,25 @@
+Args
+--spring.profiles.active=prod --build.version=1.1
+
+VM OPTION
+-Dspring.profiles.active=prod -Dbuild.version=1.3
+
+Environment
+SPRING_PROFILES_ACTIVE=prod;BUILD_VERSION=1.8;
+
+docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.12-management
+
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
+
+scoop bucket add hookdeck https://github.com/hookdeck/scoop-hookdeck-cli.git
+
+scoop install hookdeck
+
+hookdeck login --cli-key 4oyg124r2oxgf3kftlk3udw7iegvrb86w36zj4yc0j32kxdv22
+hookdeck logout --cli-key 4oyg124r2oxgf3kftlk3udw7iegvrb86w36zj4yc0j32kxdv22
+
+
+hookdeck listen 8071 Source --cli-path /monitor
+
+docker compose up -d
