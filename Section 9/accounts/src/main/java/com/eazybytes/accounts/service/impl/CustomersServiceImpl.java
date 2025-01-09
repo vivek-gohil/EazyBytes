@@ -1,8 +1,5 @@
 package com.eazybytes.accounts.service.impl;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
 import com.eazybytes.accounts.dto.AccountsDto;
 import com.eazybytes.accounts.dto.CardsDto;
 import com.eazybytes.accounts.dto.CustomerDetailsDto;
@@ -17,8 +14,9 @@ import com.eazybytes.accounts.repository.CustomerRepository;
 import com.eazybytes.accounts.service.ICustomersService;
 import com.eazybytes.accounts.service.client.CardsFeignClient;
 import com.eazybytes.accounts.service.client.LoansFeignClient;
-
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
@@ -31,58 +29,28 @@ public class CustomersServiceImpl implements ICustomersService {
 
     /**
      * @param mobileNumber - Input Mobile Number
+     *  @param correlationId - Correlation ID value generated at Edge server
      * @return Customer Details based on a given mobileNumber
      */
     @Override
-    public CustomerDetailsDto fetchCustomerDetails(String mobileNumber) {
-        System.out.println();
-        System.out.println("Fetching Customer Details for the mobile number: " + mobileNumber);
-        System.out.println();
-
+    public CustomerDetailsDto fetchCustomerDetails(String mobileNumber, String correlationId) {
         Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
                 () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
         );
-
-        System.out.println();
-        System.out.println("Customer Details fetched successfully for the mobile number: " + mobileNumber);
-        System.out.println(customer);
-        System.out.println();
-
         Accounts accounts = accountsRepository.findByCustomerId(customer.getCustomerId()).orElseThrow(
                 () -> new ResourceNotFoundException("Account", "customerId", customer.getCustomerId().toString())
         );
 
-        System.out.println();
-        System.out.println("Account Details fetched successfully for the customer Id: " + customer.getCustomerId());
-        System.out.println(accounts);
-        System.out.println();
-
         CustomerDetailsDto customerDetailsDto = CustomerMapper.mapToCustomerDetailsDto(customer, new CustomerDetailsDto());
         customerDetailsDto.setAccountsDto(AccountsMapper.mapToAccountsDto(accounts, new AccountsDto()));
 
-        System.out.println();
-        System.out.println(customerDetailsDto);
-        System.out.println();
-
-        ResponseEntity<LoansDto> loansDtoResponseEntity = loansFeignClient.fetchLoanDetails(mobileNumber);
+        ResponseEntity<LoansDto> loansDtoResponseEntity = loansFeignClient.fetchLoanDetails(correlationId, mobileNumber);
         customerDetailsDto.setLoansDto(loansDtoResponseEntity.getBody());
 
-        System.out.println();
-        System.out.println(loansDtoResponseEntity.getBody());
-        System.out.println();
-
-        ResponseEntity<CardsDto> cardsDtoResponseEntity = cardsFeignClient.fetchCardDetails(mobileNumber);
+        ResponseEntity<CardsDto> cardsDtoResponseEntity = cardsFeignClient.fetchCardDetails(correlationId, mobileNumber);
         customerDetailsDto.setCardsDto(cardsDtoResponseEntity.getBody());
-        System.out.println();
-        System.out.println(cardsDtoResponseEntity.getBody());
-        System.out.println();
-        System.out.println();
-        
-        System.out.println(customerDetailsDto);
-        System.out.println();
-        
+
         return customerDetailsDto;
 
- 
-   }
+    }
 }
