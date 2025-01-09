@@ -34,3 +34,12 @@ logging:
       eazybytes:
         gatewayserver: DEBUG
 
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-size: 10 # how many request  it has to monitor before chaning status from close to open
+        permitted-number-of-calls-in-half-open-state: 2 # number of requests are allow in half open state - to decide to go to open or close state
+        failure-rate-threshold: 50 # in percentage - if the 50% of requests are faild then move to open state
+        wait-duration-in-open-state: 10000 # in milliseconds - wait 10 seconds before goining into halfopen state
+
